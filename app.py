@@ -15,20 +15,9 @@ st.write("Portfolio Performance Analysis")
 # STOCK INPUT
 # ====================================
 
-stock1 = st.text_input(
-    "Stock 1",
-    "VCB.VN"
-)
-
-stock2 = st.text_input(
-    "Stock 2",
-    "FPT.VN"
-)
-
-stock3 = st.text_input(
-    "Stock 3",
-    "HPG.VN"
-)
+stock1 = st.text_input("Stock 1", "VCB.VN")
+stock2 = st.text_input("Stock 2", "FPT.VN")
+stock3 = st.text_input("Stock 3", "HPG.VN")
 
 # ====================================
 # WEIGHTS
@@ -56,7 +45,7 @@ w3 = st.number_input(
 )
 
 # ====================================
-# DATES
+# DATE INPUT
 # ====================================
 
 start_date = st.text_input(
@@ -84,92 +73,177 @@ risk_free_rate = st.number_input(
 
 if st.button("Calculate Sharpe Ratio"):
 
-    weights = np.array([w1, w2, w3])
+    try:
 
-    # Check weights
-    if round(weights.sum(), 5) != 1:
+        # Stocks
+        stocks = [
+            stock1.strip(),
+            stock2.strip(),
+            stock3.strip()
+        ]
 
-        st.error("Total weights must equal 1")
+        # Weights
+        weights = np.array([
+            w1,
+            w2,
+            w3
+        ])
 
-    else:
+        # ====================================
+        # CHECK WEIGHTS
+        # ====================================
 
-        try:
+        if round(weights.sum(), 5) != 1:
 
-            stocks = [
-                stock1,
-                stock2,
-                stock3
-            ]
+            st.error("Total weights must equal 1")
 
-            # Download data
+        else:
+
+            # ====================================
+            # DOWNLOAD DATA
+            # ====================================
+
             data = yf.download(
                 stocks,
                 start=start_date,
-                end=end_date
-            )
-
-            # Close prices
-            close_prices = data['Close']
-
-            # Daily returns
-            returns = close_prices.pct_change().dropna()
-
-            # Annual returns
-            annual_returns = returns.mean() * 252
-
-            # Covariance matrix
-            cov_matrix = returns.cov() * 252
-
-            # Portfolio return
-            portfolio_return = np.dot(
-                weights,
-                annual_returns
-            )
-
-            # Portfolio volatility
-            portfolio_volatility = np.sqrt(
-                np.dot(
-                    weights.T,
-                    np.dot(cov_matrix, weights)
-                )
-            )
-
-            # Sharpe Ratio
-            sharpe_ratio = (
-                portfolio_return - risk_free_rate
-            ) / portfolio_volatility
-
-            # ====================================
-            # RESULTS
-            # ====================================
-
-            st.success("Calculation Successful!")
-
-            st.subheader("Results")
-
-            st.write(
-                "Portfolio Return:",
-                round(float(portfolio_return), 4)
-            )
-
-            st.write(
-                "Portfolio Volatility:",
-                round(float(portfolio_volatility), 4)
-            )
-
-            st.write(
-                "Sharpe Ratio:",
-                round(float(sharpe_ratio), 4)
+                end=end_date,
+                auto_adjust=True,
+                progress=False
             )
 
             # ====================================
-            # CHART
+            # GET CLOSE PRICE
             # ====================================
 
-            st.subheader("Closing Price Chart")
+            if 'Close' in data.columns:
 
-            st.line_chart(close_prices)
+                close_prices = data['Close']
 
-        except Exception as e:
+            else:
 
-            st.error(str(e))
+                close_prices = data
+
+            # ====================================
+            # HANDLE SINGLE STOCK
+            # ====================================
+
+            if isinstance(close_prices, pd.Series):
+
+                close_prices = close_prices.to_frame()
+
+            # ====================================
+            # REMOVE MISSING VALUES
+            # ====================================
+
+            close_prices = close_prices.dropna()
+
+            # ====================================
+            # CHECK EMPTY DATA
+            # ====================================
+
+            if close_prices.empty:
+
+                st.error("No data found. Check stock symbols.")
+
+            else:
+
+                # ====================================
+                # DAILY RETURNS
+                # ====================================
+
+                returns = close_prices.pct_change().dropna()
+
+                # ====================================
+                # CHECK RETURNS
+                # ====================================
+
+                if returns.empty:
+
+                    st.error("Return data is empty.")
+
+                else:
+
+                    # ====================================
+                    # ANNUAL RETURN
+                    # ====================================
+
+                    annual_returns = returns.mean() * 252
+
+                    # ====================================
+                    # COVARIANCE MATRIX
+                    # ====================================
+
+                    cov_matrix = returns.cov() * 252
+
+                    # ====================================
+                    # PORTFOLIO RETURN
+                    # ====================================
+
+                    portfolio_return = np.dot(
+                        weights,
+                        annual_returns
+                    )
+
+                    # ====================================
+                    # VOLATILITY
+                    # ====================================
+
+                    portfolio_volatility = np.sqrt(
+                        np.dot(
+                            weights.T,
+                            np.dot(cov_matrix, weights)
+                        )
+                    )
+
+                    # ====================================
+                    # CHECK ZERO VOLATILITY
+                    # ====================================
+
+                    if portfolio_volatility == 0:
+
+                        st.error("Portfolio volatility is zero.")
+
+                    else:
+
+                        # ====================================
+                        # SHARPE RATIO
+                        # ====================================
+
+                        sharpe_ratio = (
+                            portfolio_return - risk_free_rate
+                        ) / portfolio_volatility
+
+                        # ====================================
+                        # RESULTS
+                        # ====================================
+
+                        st.success("Calculation Successful!")
+
+                        st.subheader("Results")
+
+                        st.write(
+                            "Portfolio Return:",
+                            round(float(portfolio_return), 4)
+                        )
+
+                        st.write(
+                            "Portfolio Volatility:",
+                            round(float(portfolio_volatility), 4)
+                        )
+
+                        st.write(
+                            "Sharpe Ratio:",
+                            round(float(sharpe_ratio), 4)
+                        )
+
+                        # ====================================
+                        # CHART
+                        # ====================================
+
+                        st.subheader("Closing Price Chart")
+
+                        st.line_chart(close_prices)
+
+    except Exception as e:
+
+        st.error(f"Error: {str(e)}")
