@@ -7,7 +7,7 @@ import numpy as np
 # TITLE
 # ====================================
 
-st.title("Vietnam Stock Sharpe Ratio")
+st.title("TÍNH CHỈ SỐ SHARPE CỦA DANH MỤC ĐẦU TƯ")
 
 st.write("Portfolio Performance Analysis")
 
