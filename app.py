@@ -240,7 +240,7 @@ if st.button("Calculate Sharpe Ratio"):
                         # CHART
                         # ====================================
 
-                        st.subheader("BIỂU ĐỒ GIÁ ĐÓNG CỬA CỦA CÁC CỔ PHIẾU TRONG DANH MỤC ĐẦU TƯ GIAI ĐOẠN 2022-2026")
+                        st.subheader("BIỂU ĐỒ GIÁ ĐÓNG CỬA CỦA CÁC CỔ PHIẾU TRONG DANH MỤC ĐẦU TƯ GIAI ĐOẠN 2022-2026_TS. VŨ ĐỨC BÌNH")
 
                         st.line_chart(close_prices)
 
