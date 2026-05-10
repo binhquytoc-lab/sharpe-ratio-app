@@ -7,9 +7,9 @@ import numpy as np
 # TITLE
 # ====================================
 
-st.title("TÍNH CHỈ SỐ SHARPE CỦA DANH MỤC ĐẦU TƯ")
+st.title("TÍNH CHỈ SỐ SHARPE CỦA DANH MỤC ĐẦU TƯ_MADE IN VŨ ĐỨC BÌNH")
 
-st.write("Portfolio Performance Analysis")
+st.write("Điền các mã cổ phiếu và tỷ trọng đầu tư trong DMĐT chứng khoán")
 
 # ====================================
 # STOCK INPUT
