@@ -240,7 +240,7 @@ if st.button("Calculate Sharpe Ratio"):
                         # CHART
                         # ====================================
 
-                        st.subheader("Closing Price Chart")
+                        st.subheader("HÌNH BIỂU DIỄN GIÁ ĐÓNG CỬA CỦA CÁC CỔ PHIẾU TRONG DANH MỤC ĐẦU TƯ")
 
                         st.line_chart(close_prices)
 
