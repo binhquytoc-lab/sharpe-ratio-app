@@ -55,7 +55,7 @@ start_date = st.text_input(
 
 end_date = st.text_input(
     "End Date",
-    "2025-01-01"
+    "2026-05-10"
 )
 
 # ====================================
